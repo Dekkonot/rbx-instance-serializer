@@ -73,7 +73,9 @@ local function firstLoad()
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
         plugin:SetSetting("settings", { context = not settings.context })
     end)
+    UI.Background.Visible = false
     UIHandler()
+    UI.Background.Visible = true
     if success then
         firstLoadCompleted = true
         UI.SerializeContainer.Visible = true
