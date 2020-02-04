@@ -8,12 +8,20 @@ local Util = require(script.Util)
 local Selection = game:GetService("Selection")
 
 local SetOptions = script.SetOptions
+local GetOptions = script.GetOptions
 
 local pluginWarn = Util.pluginWarn
 local serializerInit, serialize = Serializer.init, Serializer.serialize
 local firstLoadConnection
 
 local firstLoadCompleted = false
+
+local DEFAULT_OPTIONS = {
+    verbose = true,
+    module = true,
+    parent = true,
+    context = false,
+}
 
 local serializePluginGui = plugin:CreateDockWidgetPluginGui("dekkonot-instance-serializer-main", DockWidgetPluginGuiInfo.new(
     Enum.InitialDockState.Float, --initDockState
@@ -54,7 +62,8 @@ local function firstLoad()
     print('test', success)
     local settings = plugin:GetSetting("settings")
     if not settings then
-        settings = {}
+        settings = DEFAULT_OPTIONS
+        GetOptions:Invoke(DEFAULT_OPTIONS)
     end
     SetOptions:Fire(settings)
     UI.VerboseButton.InputBegan:Connect(function(input)
