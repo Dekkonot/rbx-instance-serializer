@@ -66,8 +66,8 @@ local function firstLoad()
             settings[k] = v
         end
     end
-    SetOptions:Fire(settings)
     UI.Background.Visible = false
+    SetOptions:Fire(settings)
     UIHandler()
     UI.Background.Visible = true
     if success then
