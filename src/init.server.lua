@@ -65,6 +65,7 @@ local function firstLoad()
         for k, v in pairs(DEFAULT_OPTIONS) do
             settings[k] = v
         end
+        plugin:SetSetting("settings", settings)
     end
     UI.Background.Visible = false
     SetOptions:Fire(settings)
@@ -86,6 +87,14 @@ local function firstLoad()
         return false
     end
 end
+
+SetOptions.Event:Connect(function(optionTable)
+    local settings = plugin:GetSetting("settings")
+    for k, v in pairs(optionTable) do
+        settings[k] = v
+    end
+    plugin:SetSetting("settings", settings)
+end)
 
 UI.RetryButton.InputBegan:Connect(function(input)
     if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
