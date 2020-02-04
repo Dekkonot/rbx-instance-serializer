@@ -56,7 +56,7 @@ local function firstLoad()
     if not settings then
         settings = {}
     end
-    SetOptions:Invoke(settings)
+    SetOptions:Fire(settings)
     UI.VerboseButton.InputBegan:Connect(function(input)
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
         plugin:SetSetting("settings", { verbose = not settings.verbose })

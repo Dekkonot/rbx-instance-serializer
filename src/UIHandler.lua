@@ -64,7 +64,7 @@ local function init()
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
         local state = states.verbose
         state = not state
-        SetOptions:Invoke({ verbose = state })
+        SetOptions:Fire({ verbose = state })
         states.verbose = state
         if state then
             turnNobOff(verboseNob) -- todo refactor verbose stuff so this can match the rest of the implementation
@@ -76,7 +76,7 @@ local function init()
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
         local state = states.module
         state = not state
-        SetOptions:Invoke({ module = state })
+        SetOptions:Fire({ module = state })
         states.module = state
         if state then
             turnNobOn(moduleNob)
@@ -88,7 +88,7 @@ local function init()
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
         local state = states.parent
         state = not state
-        SetOptions:Invoke({ parent = state })
+        SetOptions:Fire({ parent = state })
         states.parent = state
         if state then
             turnNobOn(parentNob)
@@ -100,7 +100,7 @@ local function init()
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
         local state = states.context
         state = not state
-        SetOptions:Invoke({ context = state })
+        SetOptions:Fire({ context = state })
         states.context = state
         if state then
             turnNobOn(contextNob)

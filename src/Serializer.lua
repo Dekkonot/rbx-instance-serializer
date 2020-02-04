@@ -466,7 +466,7 @@ local function init()
     end
 end
 
-SetOptions.OnInvoke = setOptions
+SetOptions.Event:Connect(setOptions)
 GetOptions.OnInvoke = getOptions
 
 return {
