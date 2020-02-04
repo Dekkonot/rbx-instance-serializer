@@ -1,4 +1,4 @@
---todo make a help menu for the options; open with a plugin menu? 
+--todo make a help menu for the options; open with a plugin menu?
 
 local Serializer = require(script.Serializer)
 local UI = require(script.UI)
