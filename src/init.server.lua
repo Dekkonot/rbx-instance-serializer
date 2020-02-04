@@ -8,7 +8,6 @@ local Util = require(script.Util)
 local Selection = game:GetService("Selection")
 
 local SetOptions = script.SetOptions
-local GetOptions = script.GetOptions
 
 local pluginWarn = Util.pluginWarn
 local serializerInit, serialize = Serializer.init, Serializer.serialize
@@ -62,8 +61,10 @@ local function firstLoad()
     print('test', success)
     local settings = plugin:GetSetting("settings")
     if not settings then
-        settings = DEFAULT_OPTIONS
-        GetOptions:Invoke(DEFAULT_OPTIONS)
+        settings = {}
+        for k, v in pairs(DEFAULT_OPTIONS) do
+            settings[k] = v
+        end
     end
     SetOptions:Fire(settings)
     UI.Background.Visible = false
