@@ -462,11 +462,12 @@ local function init()
     else
         isService = API.isService
         getProperties = API.getProperties
-        SetOptions.OnInvoke = setOptions
-        GetOptions.OnInvoke = getOptions
         return true
     end
 end
+
+SetOptions.OnInvoke = setOptions
+GetOptions.OnInvoke = getOptions
 
 return {
     serialize = serialize,
