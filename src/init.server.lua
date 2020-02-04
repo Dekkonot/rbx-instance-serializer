@@ -17,7 +17,7 @@ local firstLoadCompleted = false
 
 local DEFAULT_OPTIONS = {
     verbose = true,
-    module = true,
+    module = false,
     parent = true,
     context = false,
 }
