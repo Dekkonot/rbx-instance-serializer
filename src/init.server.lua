@@ -58,7 +58,6 @@ end
 
 local function firstLoad()
     local success = serializerInit()
-    print('test', success)
     local settings = plugin:GetSetting("settings")
     if not settings then
         settings = {}
