@@ -100,7 +100,11 @@ UI.RetryButton.InputBegan:Connect(function(input)
     firstLoad()
 end)
 
-firstLoadConnection = serializePluginGui:GetPropertyChangedSignal("Enabled"):Connect(firstLoad)
+firstLoadConnection = serializePluginGui:GetPropertyChangedSignal("Enabled"):Connect(function()
+    if serializePluginGui.Enabled then
+        firstLoad()
+    end
+end)
 if serializePluginGui.Enabled then
     firstLoad()
 end
