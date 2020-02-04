@@ -66,22 +66,6 @@ local function firstLoad()
         GetOptions:Invoke(DEFAULT_OPTIONS)
     end
     SetOptions:Fire(settings)
-    UI.VerboseButton.InputBegan:Connect(function(input)
-        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-        plugin:SetSetting("settings", { verbose = not settings.verbose })
-    end)
-    UI.ModuleButton.InputBegan:Connect(function(input)
-        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-        plugin:SetSetting("settings", { module = not settings.module })
-    end)
-    UI.ParentButton.InputBegan:Connect(function(input)
-        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-        plugin:SetSetting("settings", { parent = not settings.parent })
-    end)
-    UI.ContextButton.InputBegan:Connect(function(input)
-        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-        plugin:SetSetting("settings", { context = not settings.context })
-    end)
     UI.Background.Visible = false
     UIHandler()
     UI.Background.Visible = true
