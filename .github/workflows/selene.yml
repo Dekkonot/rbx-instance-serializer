@@ -1,4 +1,4 @@
-name: Run Selene
+name: Selene
 on:
   push:
     branches: master
