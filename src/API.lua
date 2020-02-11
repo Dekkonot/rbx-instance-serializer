@@ -23,6 +23,9 @@ local FORBIDDEN_PROPERTIES = {
         ["BrickColor"] = true,
         ["brickColor"] = true, -- Could be solved by moving how forbidden properties are handled but I don't care enough to fix it
     },
+    ["FormFactorPart"] = {
+        ["FormFactor"] = true,
+    },
     ["GuiObject"] = {
         ["Transparency"] = true,
     },
