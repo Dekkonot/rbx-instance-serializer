@@ -1,12 +1,6 @@
 {
   "name": "rbx-instance-serializer",
   "tree": {
-    "$className": "DataModel",
-    "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "Main": {
-        "$path": "src"
-      }
-    }
+    "$path": "src"
   }
 }
