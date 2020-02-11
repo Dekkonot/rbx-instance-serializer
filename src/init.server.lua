@@ -113,6 +113,8 @@ local toolbar = plugin:CreateToolbar("Instance Serializer")
 local toggleButton = toolbar:CreateButton("dekkonot-instance-serializer-toggle", "Toggle the serializer widget", "rbxassetid://2794885159", "Toggle Widget")
 local action = plugin:CreatePluginAction("dekkonot-instance-serializer-run", "Serialize Selected Instances", "Run the serializer with the current settings", "rbxassetid://2795131004", true)
 
+toggleButton.ClickableWhenViewportHidden = true
+
 if serializePluginGui.Enabled then
     toggleButton:SetActive(true)
 end
