@@ -10,11 +10,13 @@ local LOCAL_VARIABLE_LIMIT = 255
 local INSTANCE_STRING_VERBOSE = "local %s = Instance.new(%q)"
 local PROPERTY_STRING_VERBOSE = "%s.%s = %s"
 local GETSERVICE_STRING_VERBOSE = "game:GetService(%q)"
+local REQUIRE_OBJECT_STRING_VERBOSE = "%s = require(%s)"
 local REQUIRE_CHILDREN_STRING_VERBOSE = "\nfor _, v in ipairs(script:GetChildren()) do\n    require(v).Parent = %s\nend\n"
 local INSTANCE_STRING = "local %s=Instance.new%q"
 local PROPERTY_STRING = "%s.%s=%s"
 local GETSERVICE_STRING = "game:GetService%q"
 local REQUIRE_CHILDREN_STRING = "\nfor _,v in next,script:GetChildren() do require(v).Parent=%s end\n"
+local REQUIRE_OBJECT_STRING = "%s=require(%s)"
 
 local KEYWORDS = {
     ["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true, ["elseif"] = true,
@@ -238,6 +240,7 @@ local function serialize(obj)
     if #actualDescendants+1 > LOCAL_VARIABLE_LIMIT or totalLen > 199999 then
         if handle_big_output then
             local childString = make_verbose and REQUIRE_CHILDREN_STRING_VERBOSE or REQUIRE_CHILDREN_STRING
+            local requireObjString = make_verbose and REQUIRE_OBJECT_STRING_VERBOSE or REQUIRE_OBJECT_STRING
             local childStringLen = #childString
             
             
@@ -274,7 +277,7 @@ local function serialize(obj)
             local statC = 1
 
             if #topRefs ~= 0 then
-                mainStatList[statC] = objName.." = require(script."..objContainer:GetFullName()..")"
+                mainStatList[statC] = string.format(requireObjString, objName, "script."..objContainer:GetFullName())
                 for l, k in ipairs(topRefs) do
                     local propName, propValue = k[1], k[2]
                     local valueStat = ""
@@ -285,9 +288,13 @@ local function serialize(obj)
                     else
                         valueStat = makeFullName(propValue)
                     end
-                    mainStatList[statC+l] = objName.."."..propName.." = "..valueStat
+                    mainStatList[statC+l] = string.format(propertyString, objName, propName, valueStat)
                 end
                 statC = statC+#topRefs+1
+            end
+            if parent_highest_ancestor then
+                mainStatList[statC] = string.format(propertyString, objName, "Parent", topParent)
+                statC = statC+1
             end
 
             for i, v in ipairs(actualDescendants) do -- We want to make sure all of the containers exist first
@@ -295,7 +302,7 @@ local function serialize(obj)
                 local container = containerMap[v]
                 local refs = refLists[i]
                 if #refs ~= 0 then
-                    mainStatList[statC] = name.." = require(script."..container:GetFullName()..")"
+                    mainStatList[statC] = string.format(requireObjString, name, "script."..container:GetFullName())
                     for l, k in ipairs(refs) do
                         local propName, propValue = k[1], k[2]
                         local valueStat = ""
@@ -306,14 +313,11 @@ local function serialize(obj)
                         else
                             valueStat = makeFullName(propValue)
                         end
-                        mainStatList[statC+l] = name.."."..propName.." = "..valueStat
+                        mainStatList[statC+l] = string.format(propertyString, name, propName, valueStat)
                     end
                     statC = statC+#refs+1
                 end
             end
-
-            
-            mainStatList[statC] = "return require(script."..objName..")"
             
             local mainStatLen = #mainStatList-1
             for _, v in ipairs(mainStatList) do
@@ -325,6 +329,7 @@ local function serialize(obj)
             end
             
             if make_module then
+                mainStatList[statC] = "return require(script."..objName..")"
                 local mainContainer = Instance.new("ModuleScript")
                 mainContainer.Name = "SerializerOutput"
                 mainContainer.Source = table.concat(mainStatList, "\n")
