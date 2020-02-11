@@ -8,8 +8,9 @@ on:
     paths: 'src/**.lua'
 jobs:
   Lint:
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
       - name: 'Run Selene'
         run: |
           wget -O selene https://github.com/Kampfkarren/selene/releases/latest/download/selene-linux
