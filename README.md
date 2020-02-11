@@ -1,3 +1,4 @@
+![Selene](https://github.com/dekkonot/rbx-instance-serializer/workflows/Selene/badge.svg)
 # Instance Serializer
 
 This is the source code for my Instance Serializer plugin for Roblox.
@@ -14,6 +15,8 @@ Part.Color = Color3.fromRGB(255, 0, 0)
 Part.Parent = workspace
 return Part
 ```
+
+To install this plugin, either download it [here](https://www.roblox.com/library/1614059092/Instance-Serializer) or use `rojo build` on this project and put the output in `%localappdata%/Roblox/Plugins` or your OS's equivalent. A link to Rojo is provided at the bottom of this readme.
 
 ## Options
 
