@@ -176,6 +176,7 @@ local function serializeObject(nameList, obj)
     return len, statements, refs
 end
 
+-- I really hate this function. You'll probably hate it too when you read it.
 local function serialize(obj)
     local canIndex = pcall(getProperty, obj, "Name")
     if not canIndex then
