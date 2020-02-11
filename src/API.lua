@@ -25,6 +25,7 @@ local FORBIDDEN_PROPERTIES = {
     },
     ["FormFactorPart"] = {
         ["FormFactor"] = true,
+        ["formFactor"] = false,
     },
     ["GuiObject"] = {
         ["Transparency"] = true,
