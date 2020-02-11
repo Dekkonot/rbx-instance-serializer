@@ -1,5 +1,5 @@
-![Selene](https://github.com/dekkonot/rbx-instance-serializer/workflows/Selene/badge.svg)
 # Instance Serializer
+![Selene](https://github.com/dekkonot/rbx-instance-serializer/workflows/Selene/badge.svg)
 
 This is the source code for my Instance Serializer plugin for Roblox.
 
