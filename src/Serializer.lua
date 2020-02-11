@@ -335,6 +335,7 @@ local function serialize(obj)
                 mainContainer.Disabled = true
                 mainContainer.Name = "SerializerOutput"
                 mainContainer.Source = table.concat(mainStatList, "\n")
+                objContainer.Parent = mainContainer
                 return true, mainContainer
             end
         else
