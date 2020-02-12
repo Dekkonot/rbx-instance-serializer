@@ -49,9 +49,9 @@ local function serializeSelected()
     else
         local didSerialize, output = serialize(currentSelection[1])
         if didSerialize then
+            output.Parent = currentSelection[1].Parent
             Selection:Set({output})
             -- plugin:OpenScript(output)
-            output.Parent = currentSelection[1].Parent
         end
     end
 end
