@@ -5,7 +5,7 @@ local getAPI = require(script.Parent.API)
 local GetOptions = script.Parent.GetOptions
 local SetOptions = script.Parent.SetOptions
 
-local LOCAL_VARIABLE_LIMIT = 255
+local LOCAL_VARIABLE_LIMIT = 200
 
 local INSTANCE_STRING_VERBOSE = "local %s = Instance.new(%q)"
 local PROPERTY_STRING_VERBOSE = "%s.%s = %s"
