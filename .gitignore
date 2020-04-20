@@ -1,5 +1,7 @@
 *.lock
 *.rbxl
 *.rbxlx
+*.rbxm
+*.rbxmx
 *.bat
 roblox.toml
