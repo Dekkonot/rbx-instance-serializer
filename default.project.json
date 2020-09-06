@@ -1,6 +1,12 @@
 {
   "name": "rbx-instance-serializer",
   "tree": {
-    "$path": "src"
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "rbx-instance-serializer": {
+        "$path": "src"
+      }
+    }
   }
 }
