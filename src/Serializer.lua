@@ -1,6 +1,6 @@
 local util = require(script.Parent.Util)
 local toString = require(script.Parent.ToString)
-local getAPI = require(script.Parent.API)
+local API = require(script.Parent.API)
 local Options = require(script.Parent.Options)
 
 local LOCAL_VARIABLE_LIMIT = 200
@@ -23,13 +23,72 @@ local KEYWORDS = {
     ["repeat"] = true, ["return"] = true, ["then"] = true, ["true"] = true, ["until"] = true, ["while"] = true,
 }
 
-local isService, getProperties
+local PROPERTY_FILTER = {"ReadOnly", "NotScriptable"}
+local NORMAL_SECURITY_FILTER = {
+    "PluginSecurity", "LocalUserSecurity", "RobloxScriptSecurity",
+    "RobloxScriptSecurity", "NotAccessibleSecurity", "RobloxSecurity",
+}
+local PLUGIN_SECURITY_FILTER = {
+    "LocalUserSecurity", "RobloxScriptSecurity",
+    "NotAccessibleSecurity", "RobloxSecurity",
+}
+
+local FORBIDDEN_PROPERTIES = {
+    ["BasePart"] = {
+        "Position", "Rotation", "Orientation", "BrickColor", "brickColor"
+    },
+    ["FormFactorPart"] = {
+        "FormFactor",
+    },
+    ["GuiObject"] = {
+        "Transparency",
+    },
+}
+
+local PRELOAD_CLASSES = {
+    "Part",
+    "Frame", "ScrollingFrame", "TextLabel", "TextButton", "TextBox", "ImageLabel", "ImageButton",
+    "Humanoid",
+}
 
 local pluginWarn = util.pluginWarn
 local makeLuaName = util.makeLuaName
 local escapeString = util.escapeString
 
+local isService = API.isService
+
 local default_state_check = {}
+local propertyCache = {
+    Normal = {},
+    Plugin = {},
+}
+
+-- Do some basic processing on the properties table returned by API.getProperties + cache it
+local function getProperties(class, context)
+    local cacheTable = context and propertyCache.Plugin or propertyCache.Normal
+    local cache = cacheTable[class]
+    if not cache then
+        cache = API.getProperties(class, PROPERTY_FILTER, context and PLUGIN_SECURITY_FILTER or NORMAL_SECURITY_FILTER)
+        for name in pairs(cache) do
+            if string.find(name, "Color$") and cache[name.."3"] ~= nil then -- Remove BrickColor properties if possible
+                cache[name] = nil
+            elseif string.find(name, "^%l") then -- Remove any properties that have CamelCase replacements
+                if cache[string.upper(string.sub(name, 1, 1))..string.sub(name, 2)] then
+                    cache[name] = nil
+                end
+            end 
+        end
+        for _, superClass in ipairs( API.getSuperclasses(class) ) do
+            if FORBIDDEN_PROPERTIES[superClass] then
+                for _, property in ipairs(FORBIDDEN_PROPERTIES[superClass]) do
+                    cache[property] = nil
+                end
+            end
+        end
+        cacheTable[class] = cache
+    end
+    return cache
+end
 
 local function makeFullName(obj)
     if obj == game then
@@ -145,7 +204,7 @@ local function serializeObject(nameList, obj)
     local refs = {}
     local len = #instString
     local c = 2
-    for _, name in ipairs(getProperties(className, Options.context)) do
+    for name in pairs(getProperties(className, Options.context)) do
         if name ~= "Parent" then
             local success, value = pcall(getProperty, obj, name)
             if success then
@@ -425,18 +484,15 @@ local function serialize(obj)
     end
 end
 
-local function init()
-    local success, API = getAPI()
-    if not success then
-        return false
-    else
-        isService = API.isService
-        getProperties = API.getProperties
-        return true
+-- Cheekily, we can preload some properties here:
+coroutine.resume(coroutine.create(function()
+    if not API.isReady() then
+        API.readyEvent:Wait()
     end
-end
+    for _, class in ipairs(PRELOAD_CLASSES) do
+        getProperties(class, false)
+        getProperties(class, true)
+    end
+end))
 
-return {
-    serialize = serialize,
-    init = init
-}
+return serialize

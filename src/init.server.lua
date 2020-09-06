@@ -1,6 +1,7 @@
 --todo make a help menu for the options; open with a plugin menu?
 
-local Serializer = require(script.Serializer)
+local API = require(script.API)
+local Serialize = require(script.Serializer)
 local SettingsHandler = require(script.SettingsHandler)
 local Options = require(script.Options)
 local UI = require(script.UI)
@@ -10,7 +11,6 @@ local Util = require(script.Util)
 local Selection = game:GetService("Selection")
 
 local pluginWarn = Util.pluginWarn
-local serializerInit, serialize = Serializer.init, Serializer.serialize
 local firstLoadConnection
 
 local firstLoadCompleted = false
@@ -33,14 +33,14 @@ local function serializeSelected()
         pluginWarn("An Instance must be selected to serialize!")
     elseif #currentSelection > 1 then
         for _, v in ipairs(currentSelection) do
-            local didSerialize, output = serialize(v)
+            local didSerialize, output = Serialize(v)
             if didSerialize then
                 output.Name = "Serialized_"..string.gsub(v.Name:gsub("[^%w_]+", ""), "^%d+", "")
                 output.Parent = v.Parent
             end
         end
     else
-        local didSerialize, output = serialize(currentSelection[1])
+        local didSerialize, output = Serialize(currentSelection[1])
         if didSerialize then
             output.Parent = currentSelection[1].Parent
             Selection:Set({output})
@@ -67,22 +67,20 @@ local function firstLoad()
     UIHandler()
     UI.Background.Visible = true
 
-    local success = serializerInit()
-    if success then
-        firstLoadCompleted = true
-        UI.SerializeContainer.Visible = true
-        UI.RetryContainer.Visible = false
-        firstLoadConnection:Disconnect()
-        UI.SerializeButton.InputBegan:Connect(function(input)
-            if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-            serializeSelected()
-        end)
-        return true
-    else
+    if not API.isReady() then
         UI.SerializeContainer.Visible = false
-        UI.RetryContainer.Visible = true
-        return false
+        API.readyEvent:Wait()
     end
+    UI.SerializeContainer.Visible = true
+    firstLoadCompleted = true
+    firstLoadConnection:Disconnect()
+
+    UI.SerializeButton.InputBegan:Connect(function(input)
+        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+        serializeSelected()
+    end)
+
+    return true
 end
 
 UI.RetryButton.InputBegan:Connect(function(input)
