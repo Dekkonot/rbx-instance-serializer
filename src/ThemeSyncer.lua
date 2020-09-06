@@ -1,6 +1,5 @@
 local UI = require(script.Parent.UI)
-
-local GetOptions = script.Parent.GetOptions
+local Options = require(script.Parent.Options)
 
 local Studio = settings().Studio
 
@@ -23,8 +22,6 @@ local function syncTheme()
 	local theme = Studio.Theme
 	local themeName = theme.Name
 	
-	local states = GetOptions:Invoke()
-	
 	local mainBackgroundColor3 = theme:GetColor(Enum.StudioStyleGuideColor.MainBackground)
 	local borderColor3 = theme:GetColor(Enum.StudioStyleGuideColor.Border)
 	local mainButtonColor3 = theme:GetColor(Enum.StudioStyleGuideColor.MainButton)
@@ -45,7 +42,7 @@ local function syncTheme()
 
 	UI.VerboseLabel.TextColor3 = mainTextColor3
 	UI.VerboseNob.ImageColor3 = radialNobColor3
-	if not states.verbose then -- todo refactor verbose stuff so this can match the rest of the implementation
+	if not Options.verbose then -- todo refactor verbose stuff so this can match the rest of the implementation
 		UI.VerboseButton.ImageColor3 = radialBgOnColor3
 	else
 		UI.VerboseButton.ImageColor3 = radialBgOffColor3
@@ -53,7 +50,7 @@ local function syncTheme()
 	
 	UI.ModuleLabel.TextColor3 = mainTextColor3
 	UI.ModuleNob.ImageColor3 = radialNobColor3
-	if states.module then
+	if Options.module then
 		UI.ModuleButton.ImageColor3 = radialBgOnColor3
 	else
 		UI.ModuleButton.ImageColor3 = radialBgOffColor3
@@ -61,7 +58,7 @@ local function syncTheme()
 	
 	UI.ParentLabel.TextColor3 = mainTextColor3
 	UI.ParentNob.ImageColor3 = radialNobColor3
-	if states.parent then
+	if Options.parent then
 		UI.ParentButton.ImageColor3 = radialBgOnColor3
 	else
 		UI.ParentButton.ImageColor3 = radialBgOffColor3
@@ -69,7 +66,7 @@ local function syncTheme()
 	
 	UI.ContextLabel.TextColor3 = mainTextColor3
 	UI.ContextNob.ImageColor3 = radialNobColor3
-	if states.context then
+	if Options.context then
 		UI.ContextButton.ImageColor3 = radialBgOnColor3
 	else
 		UI.ContextButton.ImageColor3 = radialBgOffColor3

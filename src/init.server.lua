@@ -1,26 +1,19 @@
 --todo make a help menu for the options; open with a plugin menu?
 
 local Serializer = require(script.Serializer)
+local SettingsHandler = require(script.SettingsHandler)
+local Options = require(script.Options)
 local UI = require(script.UI)
 local UIHandler = require(script.UIHandler)
 local Util = require(script.Util)
 
 local Selection = game:GetService("Selection")
 
-local SetOptions = script.SetOptions
-
 local pluginWarn = Util.pluginWarn
 local serializerInit, serialize = Serializer.init, Serializer.serialize
 local firstLoadConnection
 
 local firstLoadCompleted = false
-
-local DEFAULT_OPTIONS = {
-    verbose = true,
-    module = false,
-    parent = true,
-    context = false,
-}
 
 local serializePluginGui = plugin:CreateDockWidgetPluginGui("dekkonot-instance-serializer-main", DockWidgetPluginGuiInfo.new(
     Enum.InitialDockState.Float, --initDockState
@@ -57,19 +50,24 @@ local function serializeSelected()
 end
 
 local function firstLoad()
-    local success = serializerInit()
-    local settings = plugin:GetSetting("settings")
+    SettingsHandler.init(plugin)
+    local settings = SettingsHandler.getSetting("settings")
     if not settings then
         settings = {}
-        for k, v in pairs(DEFAULT_OPTIONS) do
+        for k, v in pairs(Options) do
             settings[k] = v
         end
-        plugin:SetSetting("settings", settings)
+        SettingsHandler.setSetting("settings", settings)
     end
-    UI.Background.Visible = false
-    SetOptions:Fire(settings)
+    for k, v in pairs(settings) do
+        Options[k] = v
+    end
+    
+    UI.Background.Visible = false -- Significant performance gain in making the UI updates happen all at once
     UIHandler()
     UI.Background.Visible = true
+
+    local success = serializerInit()
     if success then
         firstLoadCompleted = true
         UI.SerializeContainer.Visible = true
@@ -86,14 +84,6 @@ local function firstLoad()
         return false
     end
 end
-
-SetOptions.Event:Connect(function(optionTable)
-    local settings = plugin:GetSetting("settings")
-    for k, v in pairs(optionTable) do
-        settings[k] = v
-    end
-    plugin:SetSetting("settings", settings)
-end)
 
 UI.RetryButton.InputBegan:Connect(function(input)
     if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end

@@ -1,10 +1,9 @@
 local UI = require(script.Parent.UI)
 local ThemeSyncer = require(script.Parent.ThemeSyncer)
+local SettingsHandler = require(script.Parent.SettingsHandler)
+local Options = require(script.Parent.Options)
 
 local TweenService = game:GetService("TweenService")
-
-local GetOptions = script.Parent.GetOptions
-local SetOptions = script.Parent.SetOptions
 
 local NOB_TWEEN_INFO = TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
@@ -42,30 +41,28 @@ local function turnNobOff(nob)
     tween:Play()
 end
 
-local function init()
-    local states = GetOptions:Invoke() -- Forgive me padre for I have sinned :weary:
-
+local function init()-- Friendship with sin ended, now good design is my new best friend
     local verboseNob, moduleNob, parentNob, contextNob = UI.VerboseNob, UI.ModuleNob, UI.ParentNob, UI.ContextNob
 
-    if not states.verbose then -- todo refactor verbose stuff so this can match the rest of the implementation
+    if not Options.verbose then -- todo refactor verbose stuff so this can match the rest of the implementation
         turnNobOn(verboseNob)
     end
-    if states.module then
+    if Options.module then
         turnNobOn(moduleNob)
     end
-    if states.parent then
+    if Options.parent then
         turnNobOn(parentNob)
     end
-    if states.context then
+    if Options.context then
         turnNobOn(contextNob)
     end
 
     UI.VerboseButton.InputBegan:Connect(function(input)
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-        local state = states.verbose
+        local state = Options.verbose
         state = not state
-        SetOptions:Fire({ verbose = state })
-        states.verbose = state
+        Options.verbose = state
+        SettingsHandler.setSetting("settings", Options)
         if state then
             turnNobOff(verboseNob) -- todo refactor verbose stuff so this can match the rest of the implementation
         else
@@ -74,10 +71,10 @@ local function init()
     end)
     UI.ModuleButton.InputBegan:Connect(function(input)
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-        local state = states.module
+        local state = Options.module
         state = not state
-        SetOptions:Fire({ module = state })
-        states.module = state
+        Options.module = state
+        SettingsHandler.setSetting("settings", Options)
         if state then
             turnNobOn(moduleNob)
         else
@@ -86,10 +83,10 @@ local function init()
     end)
     UI.ParentButton.InputBegan:Connect(function(input)
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-        local state = states.parent
+        local state = Options.parent
         state = not state
-        SetOptions:Fire({ parent = state })
-        states.parent = state
+        Options.parent = state
+        SettingsHandler.setSetting("settings", Options)
         if state then
             turnNobOn(parentNob)
         else
@@ -98,10 +95,10 @@ local function init()
     end)
     UI.ContextButton.InputBegan:Connect(function(input)
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-        local state = states.context
+        local state = Options.context
         state = not state
-        SetOptions:Fire({ context = state })
-        states.context = state
+        Options.context = state
+        SettingsHandler.setSetting("settings", Options)
         if state then
             turnNobOn(contextNob)
         else

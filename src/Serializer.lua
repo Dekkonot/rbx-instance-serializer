@@ -1,9 +1,7 @@
 local util = require(script.Parent.Util)
 local toString = require(script.Parent.ToString)
 local getAPI = require(script.Parent.API)
-
-local GetOptions = script.Parent.GetOptions
-local SetOptions = script.Parent.SetOptions
+local Options = require(script.Parent.Options)
 
 local LOCAL_VARIABLE_LIMIT = 200
 
@@ -33,11 +31,7 @@ local escapeString = util.escapeString
 
 local default_state_check = {}
 
-local is_plugin_context = true
-local make_verbose = true
-local parent_highest_ancestor = true
 local handle_big_output = true
-local make_module = true
 
 local function makeFullName(obj)
     if obj == game then
@@ -45,7 +39,7 @@ local function makeFullName(obj)
     elseif obj == workspace then
         return "workspace"
     elseif isService(obj.ClassName) then
-        return string.format(make_verbose and GETSERVICE_STRING_VERBOSE or GETSERVICE_STRING, obj.ClassName)
+        return string.format(Options.verbose and GETSERVICE_STRING_VERBOSE or GETSERVICE_STRING, obj.ClassName)
     end
     local fullName = ""
     repeat
@@ -57,7 +51,7 @@ local function makeFullName(obj)
             fullName = "workspace"..fullName
             break
         elseif isService(obj.ClassName) then
-            fullName = string.format(make_verbose and GETSERVICE_STRING_VERBOSE or GETSERVICE_STRING, obj.ClassName)..fullName
+            fullName = string.format(Options.verbose and GETSERVICE_STRING_VERBOSE or GETSERVICE_STRING, obj.ClassName)..fullName
             break
         elseif name:find("[^%w_]") or obj.Name:find("^%d") then
             fullName = string.format("[%q]", escapeString(name))..fullName
@@ -77,7 +71,7 @@ local function makeNameList(obj, descendants)
         objects[i+1] = v
     end
     local objToNameMap = {}
-    if make_verbose then -- This isn't a great solution to the problem, but it isn't that slow so I think it's fine
+    if Options.verbose then -- This isn't a great solution to the problem, but it isn't that slow so I think it's fine
         local nameList = {}
         for _, v in ipairs(objects) do
             local name = string.gsub(string.gsub(v.Name, "[^%w_]", ""), "^[%d_]+", "")
@@ -138,7 +132,7 @@ local function serializeObject(nameList, obj)
 
     local objName = nameList[obj]
     local toStringFunc, instanceString, propertyString
-    if make_verbose then
+    if Options.verbose then
         toStringFunc = toString.toStringVerbose
         instanceString = INSTANCE_STRING_VERBOSE
         propertyString = PROPERTY_STRING_VERBOSE
@@ -153,7 +147,7 @@ local function serializeObject(nameList, obj)
     local refs = {}
     local len = #instString
     local c = 2
-    for _, name in ipairs(getProperties(className, is_plugin_context)) do
+    for _, name in ipairs(getProperties(className, Options.context)) do
         if name ~= "Parent" then
             local success, value = pcall(getProperty, obj, name)
             if success then
@@ -184,7 +178,7 @@ local function serialize(obj)
         return false
     end
 
-    local propertyString = make_verbose and PROPERTY_STRING_VERBOSE or PROPERTY_STRING
+    local propertyString = Options.verbose and PROPERTY_STRING_VERBOSE or PROPERTY_STRING
     
     local actualDescendants = {}
     local descendants = obj:GetDescendants()
@@ -234,14 +228,14 @@ local function serialize(obj)
 
     
     local topParent = ""
-    if parent_highest_ancestor then
+    if Options.parent then
         topParent = makeFullName(obj.Parent)
     end
 
     if #actualDescendants+1 > LOCAL_VARIABLE_LIMIT or totalLen > 199999 then
         if handle_big_output then
-            local childString = make_verbose and REQUIRE_CHILDREN_STRING_VERBOSE or REQUIRE_CHILDREN_STRING
-            local requireObjString = make_verbose and REQUIRE_OBJECT_STRING_VERBOSE or REQUIRE_OBJECT_STRING
+            local childString = Options.verbose and REQUIRE_CHILDREN_STRING_VERBOSE or REQUIRE_CHILDREN_STRING
+            local requireObjString = Options.verbose and REQUIRE_OBJECT_STRING_VERBOSE or REQUIRE_OBJECT_STRING
             local childStringLen = #childString
             
             
@@ -293,7 +287,7 @@ local function serialize(obj)
                 end
                 statC = statC+#topRefs+1
             end
-            if parent_highest_ancestor then
+            if Options.parent then
                 mainStatList[statC] = string.format(propertyString, objName, "Parent", topParent)
                 statC = statC+1
             end
@@ -329,7 +323,7 @@ local function serialize(obj)
                 return false
             end
             
-            if make_module then
+            if Options.module then
                 mainStatList[statC] = "return require(script."..objName..")"
                 local mainContainer = Instance.new("ModuleScript")
                 mainContainer.Name = "SerializerOutput"
@@ -350,7 +344,7 @@ local function serialize(obj)
         end
     else
         local src = table.concat(topStats, "\n")
-        if make_verbose then
+        if Options.verbose then
             src = src.."\n"
             for i, v in ipairs(statLists) do
                 local thing = actualDescendants[i]
@@ -378,11 +372,11 @@ local function serialize(obj)
                 src = src..string.format(propertyString, objName, propName, nameList[propValue] or makeFullName(propValue)).."\n"
             end
 
-            if parent_highest_ancestor then
+            if Options.parent then
                 src = src..string.format(propertyString, objName, "Parent", topParent)
             end
 
-            if make_module then
+            if Options.module then
                 src = src.."\nreturn "..objName
             end
         else
@@ -409,11 +403,11 @@ local function serialize(obj)
                 src = src..string.format(propertyString, objName, propName, nameList[propValue] or makeFullName(propValue)).."\n"
             end
 
-            if parent_highest_ancestor then
+            if Options.parent then
                 src = src..string.format(propertyString, objName, "Parent", topParent)
             end
 
-            if make_module then
+            if Options.module then
                 src = src.."\nreturn "..objName
             end
         end
@@ -423,7 +417,7 @@ local function serialize(obj)
             return false
         end
 
-        if make_module then
+        if Options.module then
             local container = Instance.new("ModuleScript")
             container.Name = "SerializerOutput"
             container.Source = src
@@ -438,30 +432,6 @@ local function serialize(obj)
     end
 end
 
-local function setOptions(optionTable)
-    if optionTable.verbose ~= nil then
-        make_verbose = optionTable.verbose
-    end
-    if optionTable.module ~= nil then
-        make_module = optionTable.module
-    end
-    if optionTable.parent ~= nil then
-        parent_highest_ancestor = optionTable.parent
-    end
-    if optionTable.context ~= nil then
-        is_plugin_context = optionTable.context
-    end
-end
-
-local function getOptions()
-    return {
-        verbose = make_verbose,
-        module = make_module,
-        parent = parent_highest_ancestor,
-        context = is_plugin_context
-    }
-end
-
 local function init()
     local success, API = getAPI()
     if not success then
@@ -472,9 +442,6 @@ local function init()
         return true
     end
 end
-
-SetOptions.Event:Connect(setOptions)
-GetOptions.OnInvoke = getOptions
 
 return {
     serialize = serialize,
