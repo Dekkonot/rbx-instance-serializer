@@ -31,8 +31,6 @@ local escapeString = util.escapeString
 
 local default_state_check = {}
 
-local handle_big_output = true
-
 local function makeFullName(obj)
     if obj == game then
         return "game"
@@ -233,114 +231,109 @@ local function serialize(obj)
     end
 
     if #actualDescendants+1 > LOCAL_VARIABLE_LIMIT or totalLen > 199999 then
-        if handle_big_output then
-            local childString = Options.verbose and REQUIRE_CHILDREN_STRING_VERBOSE or REQUIRE_CHILDREN_STRING
-            local requireObjString = Options.verbose and REQUIRE_OBJECT_STRING_VERBOSE or REQUIRE_OBJECT_STRING
-            local childStringLen = #childString
-            
-            
-            local mainStatList = {}
-            local containerMap = {}
+        local childString = Options.verbose and REQUIRE_CHILDREN_STRING_VERBOSE or REQUIRE_CHILDREN_STRING
+        local requireObjString = Options.verbose and REQUIRE_OBJECT_STRING_VERBOSE or REQUIRE_OBJECT_STRING
+        local childStringLen = #childString
+        
+        
+        local mainStatList = {}
+        local containerMap = {}
 
-            if topStatLen+childStringLen+#objName+9 > 199999 then -- This might read 199,998 characters as 199,999 but that's ok
+        if topStatLen+childStringLen+#objName+9 > 199999 then -- This might read 199,998 characters as 199,999 but that's ok
+            pluginWarn("serialized string is too large or has too many descendants to write to output script")
+            return false
+        end
+
+        local objContainer = Instance.new("ModuleScript")
+        containerMap[obj] = objContainer
+        
+        objContainer.Name = objName
+        objContainer.Source = table.concat(topStats, "\n")..string.format(childString, objName).."\nreturn "..objName
+
+        for i, v in ipairs(actualDescendants) do
+            local name = nameList[v]
+
+            if lenList[i]+childStringLen+#name+9 > 199999 then
                 pluginWarn("serialized string is too large or has too many descendants to write to output script")
                 return false
             end
 
-            local objContainer = Instance.new("ModuleScript")
-            containerMap[obj] = objContainer
+            local container = Instance.new("ModuleScript")
+            containerMap[v] = container
             
-            objContainer.Name = objName
-            objContainer.Source = table.concat(topStats, "\n")..string.format(childString, objName).."\nreturn "..objName
+            container.Parent = containerMap[v.Parent]
+            container.Name = name
+            container.Source = table.concat(statLists[i], "\n")..string.format(childString, name).."\nreturn "..name
+        end
+        
+        local statC = 1
 
-            for i, v in ipairs(actualDescendants) do
-                local name = nameList[v]
-
-                if lenList[i]+childStringLen+#name+9 > 199999 then
-                    pluginWarn("serialized string is too large or has too many descendants to write to output script")
-                    return false
+        if #topRefs ~= 0 then
+            mainStatList[statC] = string.format(requireObjString, objName, "script."..objContainer:GetFullName())
+            for l, k in ipairs(topRefs) do
+                local propName, propValue = k[1], k[2]
+                local valueStat = ""
+                if propValue == obj then
+                    valueStat = objName
+                elseif obj:IsAncestorOf(propValue) or propValue == obj then
+                    valueStat = "require(script."..containerMap[propValue]:GetFullName()..")"
+                else
+                    valueStat = makeFullName(propValue)
                 end
-
-                local container = Instance.new("ModuleScript")
-                containerMap[v] = container
-                
-                container.Parent = containerMap[v.Parent]
-                container.Name = name
-                container.Source = table.concat(statLists[i], "\n")..string.format(childString, name).."\nreturn "..name
+                mainStatList[statC+l] = string.format(propertyString, objName, propName, valueStat)
             end
-            
-            local statC = 1
+            statC = statC+#topRefs+1
+        end
+        if Options.parent then
+            mainStatList[statC] = string.format(propertyString, objName, "Parent", topParent)
+            statC = statC+1
+        end
 
-            if #topRefs ~= 0 then
-                mainStatList[statC] = string.format(requireObjString, objName, "script."..objContainer:GetFullName())
-                for l, k in ipairs(topRefs) do
+        for i, v in ipairs(actualDescendants) do -- We want to make sure all of the containers exist first
+            local name = nameList[v]
+            local container = containerMap[v]
+            local refs = refLists[i]
+            if #refs ~= 0 then
+                mainStatList[statC] = string.format(requireObjString, name, "script."..container:GetFullName())
+                for l, k in ipairs(refs) do
                     local propName, propValue = k[1], k[2]
                     local valueStat = ""
-                    if propValue == obj then
-                        valueStat = objName
+                    if propValue == v then
+                        valueStat = name
                     elseif obj:IsAncestorOf(propValue) or propValue == obj then
                         valueStat = "require(script."..containerMap[propValue]:GetFullName()..")"
                     else
                         valueStat = makeFullName(propValue)
                     end
-                    mainStatList[statC+l] = string.format(propertyString, objName, propName, valueStat)
+                    mainStatList[statC+l] = string.format(propertyString, name, propName, valueStat)
                 end
-                statC = statC+#topRefs+1
+                statC = statC+#refs+1
             end
-            if Options.parent then
-                mainStatList[statC] = string.format(propertyString, objName, "Parent", topParent)
-                statC = statC+1
-            end
-
-            for i, v in ipairs(actualDescendants) do -- We want to make sure all of the containers exist first
-                local name = nameList[v]
-                local container = containerMap[v]
-                local refs = refLists[i]
-                if #refs ~= 0 then
-                    mainStatList[statC] = string.format(requireObjString, name, "script."..container:GetFullName())
-                    for l, k in ipairs(refs) do
-                        local propName, propValue = k[1], k[2]
-                        local valueStat = ""
-                        if propValue == v then
-                            valueStat = name
-                        elseif obj:IsAncestorOf(propValue) or propValue == obj then
-                            valueStat = "require(script."..containerMap[propValue]:GetFullName()..")"
-                        else
-                            valueStat = makeFullName(propValue)
-                        end
-                        mainStatList[statC+l] = string.format(propertyString, name, propName, valueStat)
-                    end
-                    statC = statC+#refs+1
-                end
-            end
-            
-            local mainStatLen = #mainStatList-1
-            for _, v in ipairs(mainStatList) do
-                mainStatLen = mainStatLen+#v
-            end
-            if mainStatLen > 199999 then
-                pluginWarn("serialized string is too large or has too many descendants to write to output script")
-                return false
-            end
-            
-            if Options.module then
-                mainStatList[statC] = "return require(script."..objName..")"
-                local mainContainer = Instance.new("ModuleScript")
-                mainContainer.Name = "SerializerOutput"
-                mainContainer.Source = table.concat(mainStatList, "\n")
-                objContainer.Parent = mainContainer
-                return true, mainContainer
-            else                
-                local mainContainer = Instance.new("Script")
-                mainContainer.Disabled = true
-                mainContainer.Name = "SerializerOutput"
-                mainContainer.Source = table.concat(mainStatList, "\n")
-                objContainer.Parent = mainContainer
-                return true, mainContainer
-            end
-        else
+        end
+        
+        local mainStatLen = #mainStatList-1
+        for _, v in ipairs(mainStatList) do
+            mainStatLen = mainStatLen+#v
+        end
+        if mainStatLen > 199999 then
             pluginWarn("serialized string is too large or has too many descendants to write to output script")
             return false
+        end
+        
+        if Options.module then
+            mainStatList[statC] = "return require(script."..objName..")"
+            local mainContainer = Instance.new("ModuleScript")
+            mainContainer.Name = "SerializerOutput"
+            mainContainer.Source = table.concat(mainStatList, "\n")
+            objContainer.Parent = mainContainer
+            return true, mainContainer
+        else                
+            local mainContainer = Instance.new("Script")
+            mainContainer.Disabled = true
+            mainContainer.Name = "SerializerOutput"
+            mainContainer.Source = table.concat(mainStatList, "\n")
+            objContainer.Parent = mainContainer
+            return true, mainContainer
         end
     else
         local src = table.concat(topStats, "\n")
