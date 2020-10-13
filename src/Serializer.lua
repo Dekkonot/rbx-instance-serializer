@@ -1,6 +1,6 @@
 local util = require(script.Parent.Util)
 local toString = require(script.Parent.ToString)
-local API = require(script.Parent.API)
+local API = require(script.Parent.Modules.API)
 local Options = require(script.Parent.Options)
 
 local LOCAL_VARIABLE_LIMIT = 200
