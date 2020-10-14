@@ -65,7 +65,7 @@ local function firstLoad()
     for k, v in pairs(settings) do
         Options[k] = v
     end
-    
+
     UI.Background.Visible = false -- Significant performance gain in making the UI updates happen all at once
     UnloadingMaid:Give(UIHandler())
     UI.Background.Visible = true
