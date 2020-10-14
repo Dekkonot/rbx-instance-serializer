@@ -1,5 +1,3 @@
---todo make a help menu for the options; open with a plugin menu?
-
 local API = require(script.Modules.API)
 local Serialize = require(script.Serializer)
 local SettingsHandler = require(script.SettingsHandler)
