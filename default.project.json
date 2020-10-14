@@ -5,7 +5,10 @@
     "Workspace": {
       "$className": "Workspace",
       "rbx-instance-serializer": {
-        "$path": "src"
+        "$path": "src",
+        "$properties": {
+          "Disabled": true
+        }
       }
     }
   }
