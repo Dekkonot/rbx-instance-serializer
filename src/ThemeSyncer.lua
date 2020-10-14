@@ -129,9 +129,7 @@ local function init()
 		end
 	end)
 
-	Studio.ThemeChanged:Connect(syncTheme)
-
-	return true
+	return Studio.ThemeChanged:Connect(syncTheme)
 end
 
 return {

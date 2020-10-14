@@ -3,12 +3,15 @@
 local API = require(script.Modules.API)
 local Serialize = require(script.Serializer)
 local SettingsHandler = require(script.SettingsHandler)
+local Maid = require(script.Modules.Maid)
 local Options = require(script.Options)
 local UI = require(script.UI)
 local UIHandler = require(script.UIHandler)
 local Util = require(script.Util)
 
 local Selection = game:GetService("Selection")
+
+local UnloadingMaid = Maid.new()
 
 local pluginWarn = Util.pluginWarn
 local firstLoadConnection
@@ -64,7 +67,7 @@ local function firstLoad()
     end
     
     UI.Background.Visible = false -- Significant performance gain in making the UI updates happen all at once
-    UIHandler()
+    UnloadingMaid:Give(UIHandler())
     UI.Background.Visible = true
 
     if not API.isReady() then
@@ -74,6 +77,7 @@ local function firstLoad()
     UI.SerializeContainer.Visible = true
     firstLoadCompleted = true
     firstLoadConnection:Disconnect()
+    firstLoadConnection = nil
 
     UI.SerializeButton.InputBegan:Connect(function(input)
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
@@ -122,3 +126,12 @@ action.Triggered:Connect(function()
         end
     end
 end)
+
+UnloadingMaid:Give(toolbar)
+UnloadingMaid:Give(toggleButton)
+UnloadingMaid:Give(action)
+UnloadingMaid:Give(serializePluginGui)
+
+UnloadingMaid:Give(plugin.Unloading:Connect(function()
+    UnloadingMaid:Sweep()
+end))

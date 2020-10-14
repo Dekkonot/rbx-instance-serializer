@@ -1,9 +1,12 @@
+local Maid = require(script.Parent.Modules.Maid)
 local UI = require(script.Parent.UI)
 local ThemeSyncer = require(script.Parent.ThemeSyncer)
 local SettingsHandler = require(script.Parent.SettingsHandler)
 local Options = require(script.Parent.Options)
 
 local TweenService = game:GetService("TweenService")
+
+local CleanupMaid = Maid.new()
 
 local NOB_TWEEN_INFO = TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
@@ -23,8 +26,9 @@ local function turnNobOn(nob)
             colorRadialOn(nob.Parent)
         end)
         onTweens[nob] = tween
+        CleanupMaid:Give(tween)
     end
-    
+
     tween:Play()
 end
 
@@ -36,6 +40,7 @@ local function turnNobOff(nob)
             colorRadialOff(nob.Parent)
         end)
         offTweens[nob] = tween
+        CleanupMaid:Give(tween)
     end
 
     tween:Play()
@@ -57,6 +62,7 @@ local function init()-- Friendship with sin ended, now good design is my new bes
         turnNobOn(contextNob)
     end
 
+    --UI connections are disconnected when the UI is destroyed
     UI.VerboseButton.InputBegan:Connect(function(input)
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
         local state = Options.verbose
@@ -106,7 +112,9 @@ local function init()-- Friendship with sin ended, now good design is my new bes
         end
     end)
 
-    themeSyncInit()
+    CleanupMaid:Give(themeSyncInit())
+
+    return CleanupMaid
 end
 
 return init
