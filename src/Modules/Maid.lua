@@ -53,7 +53,6 @@ function Maid:CleanUp(task)
 end
 
 function Maid:Sweep()
-	print("Sweeping uwu")
 	local tasks = self._tasks
 	for k, v in pairs(tasks) do
 		if typeof(v) == "RBXScriptConnection" then
