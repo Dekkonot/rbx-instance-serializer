@@ -1,11 +1,11 @@
-local API = require(script.Modules.API)
-local Serialize = require(script.Serializer)
-local SettingsHandler = require(script.SettingsHandler)
-local Maid = require(script.Modules.Maid)
-local Options = require(script.Options)
-local UI = require(script.UI)
-local UIHandler = require(script.UIHandler)
-local Util = require(script.Util)
+local Api = require(script.Modules.API, "Modules.API")
+local Serialize = require(script.Serializer, "Serializer")
+local SettingsHandler = require(script.SettingsHandler, "SettingsHandler")
+local Maid = require(script.Modules.Maid, "Modules.Maid")
+local Options = require(script.Options, "Options")
+local UI = require(script.UI, "UI")
+local UIHandler = require(script.UIHandler, "UIHandler")
+local Util = require(script.Util, "Util")
 
 local Selection = game:GetService("Selection")
 
@@ -68,9 +68,9 @@ local function firstLoad()
     UnloadingMaid:Give(UIHandler())
     UI.Background.Visible = true
 
-    if not API.isReady() then
+    if not Api.isReady() then
         UI.SerializeContainer.Visible = false
-        API.readyEvent:Wait()
+        Api.readyEvent:Wait()
     end
     UI.SerializeContainer.Visible = true
     firstLoadCompleted = true
