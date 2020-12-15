@@ -130,7 +130,7 @@ local function toStringVerbose(v)
         return string.format("UDim.new(%.14g, %.14g)", round(v.Scale), round(v.Offset))
     elseif dataType == "UDim2" then
         return string.format(
-            "UDim2.new(%.14g, %.14g, %.14, %.14g)",
+            "UDim2.new(%.14g, %.14g, %.14g, %.14g)",
             round(v.X.Scale), round(v.X.Offset), round(v.Y.Scale), round(v.Y.Offset)
         )
     elseif dataType == "Vector2" then
@@ -266,7 +266,7 @@ local function toStringMinified(v)
         return string.format("UDim.new(%.14g,%.14g)", round(v.Scale), round(v.Offset))
     elseif dataType == "UDim2" then
         return string.format(
-            "UDim2.new(%.14g,%.14g,%.14,%.14g)",
+            "UDim2.new(%.14g,%.14g,%.14g,%.14g)",
             round(v.X.Scale), round(v.X.Offset), round(v.Y.Scale), round(v.Y.Offset)
         )
     elseif dataType == "Vector2" then
