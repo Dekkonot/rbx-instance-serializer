@@ -1,4 +1,4 @@
-local escapeString = require(script.Parent.EscapeString, "Serializer.EscapeString")
+local escapeString = require(script.Parent.EscapeString)
 
 local ROUND_TO_PLACE = 7
 

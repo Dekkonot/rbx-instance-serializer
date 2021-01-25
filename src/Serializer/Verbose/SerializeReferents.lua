@@ -1,5 +1,5 @@
-local Constants = require(script.Parent.Parent.Constants, "Serializer.Constants")
-local MakeNameList = require(script.Parent.Parent.MakeNameList, "Serializer.MakeNameList")
+local Constants = require(script.Parent.Parent.Constants)
+local MakeNameList = require(script.Parent.Parent.MakeNameList)
 
 local REQUIRE_OBJECT_STRING = Constants.Verbose.REQUIRE_OBJECT_STRING
 local SET_PROPERTY_STRING = Constants.Verbose.SET_PROPERTY_STRING

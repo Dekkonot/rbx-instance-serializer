@@ -1,4 +1,4 @@
-local Api = require(script.Parent.Parent.Modules.API, "src.Modules.API")
+local Api = require(script.Parent.Parent.Modules.API)
 
 local PROPERTY_FILTER = {"ReadOnly", "NotScriptable"}
 local NORMAL_SECURITY_FILTER = {

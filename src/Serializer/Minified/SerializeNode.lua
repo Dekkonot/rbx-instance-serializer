@@ -2,18 +2,18 @@ local ARE_WE_ATTRIBUTES_YET = pcall(game.GetAttributes, game)
 
 local CollectionService = game:GetService("CollectionService")
 
-local Api = require(script.Parent.Parent.Parent.Modules.API, "Modules.API")
-local Constants = require(script.Parent.Parent.Constants, "Serializer.Constants")
-local GetProperties = require(script.Parent.Parent.GetProperties, "Serializer.GetProperties")
-local Options = require(script.Parent.Parent.Parent.Options, "Options")
-local ToString = require(script.Parent.Parent.ToString, "Serializer.ToString")
+local Api = require(script.Parent.Parent.Parent.Modules.API)
+local Constants = require(script.Parent.Parent.Constants)
+local GetProperties = require(script.Parent.Parent.GetProperties)
+local Options = require(script.Parent.Parent.Parent.Options)
+local ToString = require(script.Parent.Parent.ToString)
 
 local MAKE_INSTANCE_STRING = Constants.Minified.MAKE_INSTANCE_STRING
 local SET_ATTRIBUTE_STRING = Constants.Minified.SET_ATTRIBUTE_STRING
 local SET_PROPERTY_STRING = Constants.Minified.SET_PROPERTY_STRING
 local SET_TAG_STRING = Constants.Minified.SET_TAG_STRING
 
-local escapeString = require(script.Parent.Parent.EscapeString, "Serializer.EscapeString")
+local escapeString = require(script.Parent.Parent.EscapeString)
 local isService = Api.isService
 local toString = ToString.toStringMinified
 

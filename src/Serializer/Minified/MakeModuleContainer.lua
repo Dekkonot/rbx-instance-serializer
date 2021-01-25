@@ -1,4 +1,4 @@
-local Constants = require(script.Parent.Parent.Constants, "Serializer.Constants")
+local Constants = require(script.Parent.Parent.Constants)
 
 local MAX_SOURCE_LEN = Constants.MAX_SOURCE_LEN
 

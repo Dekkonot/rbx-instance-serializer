@@ -1,8 +1,8 @@
-local Api = require(script.Parent.Modules.API, "src.Modules.API")
-local GetProperties = require(script.GetProperties, "src.Serializer.GetProperties")
-local Options = require(script.Parent.Options, "Options")
-local SerializeMinified = require(script.Minified, "Serializer.Minified")
-local SerializeVerbose = require(script.Verbose, "Serializer.Verbose")
+local Api = require(script.Parent.Modules.API)
+local GetProperties = require(script.GetProperties)
+local Options = require(script.Parent.Options)
+local SerializeMinified = require(script.Minified)
+local SerializeVerbose = require(script.Verbose)
 
 local PRELOAD_CLASSES = {
     "Part",

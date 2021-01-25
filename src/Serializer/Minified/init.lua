@@ -1,6 +1,6 @@
-local Constants = require(script.Parent.Constants, "Serializer.Constants")
-local MakeNameList = require(script.Parent.MakeNameList, "Serializer.MakeNameList")
-local Options = require(script.Parent.Parent.Options, "Options")
+local Constants = require(script.Parent.Constants)
+local MakeNameList = require(script.Parent.MakeNameList)
+local Options = require(script.Parent.Parent.Options)
 
 local LOCAL_VARIABLE_LIMIT = Constants.LOCAL_VARIABLE_LIMIT
 local MAX_SOURCE_LEN = Constants.MAX_SOURCE_LEN
@@ -9,9 +9,9 @@ local COLLECTION_SERVICE_STRING = Constants.Minified.COLLECTION_SERVICE_STRING
 local MAKE_INSTANCE_STRING = Constants.Minified.MAKE_INSTANCE_STRING
 local SET_PROPERTY_STRING = Constants.Minified.SET_PROPERTY_STRING
 
-local makeModuleContainer = require(script.MakeModuleContainer, "Serializer.Minified.MakeModuleContainer")
-local serializeNode = require(script.SerializeNode, "Serializer.Minified.SerializeNode")
-local serializeReferents = require(script.SerializeReferents, "Serializer.Minified.SerializeReferents")
+local makeModuleContainer = require(script.MakeModuleContainer)
+local serializeNode = require(script.SerializeNode)
+local serializeReferents = require(script.SerializeReferents)
 
 local makeFullName = MakeNameList.makeFullNameMinified
 local makeNameList = MakeNameList.makeNameListMinified
