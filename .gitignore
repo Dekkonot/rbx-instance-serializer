@@ -5,3 +5,7 @@
 *.rbxmx
 *.bat
 roblox.toml
+
+# Ignore developer files and folders
+.vscode/
+*.todo
