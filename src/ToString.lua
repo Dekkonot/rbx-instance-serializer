@@ -106,8 +106,7 @@ local function toString(...)
 		elseif dataType == "Faces" then
 			results[i] = string.format(
 				"Faces.new(%s)",
-				genEnumList(v, Enum.NormalId),
-				","
+				genEnumList(v, Enum.NormalId, ",")
 			)
 		elseif dataType == "NumberRange" then
 			results[i] = string.format(
@@ -124,7 +123,7 @@ local function toString(...)
 				)
 			elseif #keypoints == 2 then
 				results[i] = string.format(
-					"NumberSequence.new(%s,%s)",
+					"NumberSequence.new(%s)",
 					toString(keypoints[1].Value, keypoints[2].Value)
 				)
 			else
@@ -282,7 +281,7 @@ local function toStringVerbose(...)
 			else
 				results[i] = string.format(
 					"ColorSequence.new({%s})",
-					toString(unpack(keypoints))
+					toStringVerbose(unpack(keypoints))
 				)
 			end
 		elseif dataType == "ColorSequenceKeypoint" then
@@ -303,8 +302,7 @@ local function toStringVerbose(...)
 		elseif dataType == "Faces" then
 			results[i] = string.format(
 				"Faces.new(%s)",
-				genEnumList(v, Enum.NormalId),
-				","
+				genEnumList(v, Enum.NormalId, ", ")
 			)
 		elseif dataType == "NumberRange" then
 			results[i] = string.format(
@@ -317,17 +315,17 @@ local function toStringVerbose(...)
 			if #keypoints == 2 and keypoints[1].Value == keypoints[2].Value then
 				results[i] = string.format(
 					"NumberSequence.new(%s)",
-					toString(keypoints[1].Value)
+					toStringVerbose(keypoints[1].Value)
 				)
 			elseif #keypoints == 2 then
 				results[i] = string.format(
-					"NumberSequence.new(%s, %s)",
-					toString(keypoints[1].Value, keypoints[2].Value)
+					"NumberSequence.new(%s)",
+					toStringVerbose(keypoints[1].Value, keypoints[2].Value)
 				)
 			else
 				results[i] = string.format(
 					"NumberSequence.new({%s})",
-					toString(unpack(keypoints))
+					toStringVerbose(unpack(keypoints))
 				)
 			end
 		elseif dataType == "NumberSequenceKeypoint" then
