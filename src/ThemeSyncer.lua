@@ -22,14 +22,18 @@ local RADIAL_NOB_COLOR3 = {
 local function syncTheme()
 	local theme = Studio.Theme
 	local themeName = theme.Name
-	
+
 	local states = GetOptions:Invoke()
-	
-	local mainBackgroundColor3 = theme:GetColor(Enum.StudioStyleGuideColor.MainBackground)
+
+	local mainBackgroundColor3 = theme:GetColor(
+		Enum.StudioStyleGuideColor.MainBackground
+	)
 	local borderColor3 = theme:GetColor(Enum.StudioStyleGuideColor.Border)
-	local mainButtonColor3 = theme:GetColor(Enum.StudioStyleGuideColor.MainButton)
+	local mainButtonColor3 = theme:GetColor(
+		Enum.StudioStyleGuideColor.MainButton
+	)
 	local mainTextColor3 = theme:GetColor(Enum.StudioStyleGuideColor.MainText)
-	
+
 	local radialNobColor3 = RADIAL_NOB_COLOR3[themeName]
 	local radialBgOnColor3 = RADIAL_BG_ON_COLOR3[themeName]
 	local radialBgOffColor3 = RADIAL_BG_OFF_COLOR3[themeName]
@@ -50,7 +54,7 @@ local function syncTheme()
 	else
 		UI.VerboseButton.ImageColor3 = radialBgOffColor3
 	end
-	
+
 	UI.ModuleLabel.TextColor3 = mainTextColor3
 	UI.ModuleNob.ImageColor3 = radialNobColor3
 	if states.module then
@@ -58,7 +62,7 @@ local function syncTheme()
 	else
 		UI.ModuleButton.ImageColor3 = radialBgOffColor3
 	end
-	
+
 	UI.ParentLabel.TextColor3 = mainTextColor3
 	UI.ParentNob.ImageColor3 = radialNobColor3
 	if states.parent then
@@ -66,7 +70,7 @@ local function syncTheme()
 	else
 		UI.ParentButton.ImageColor3 = radialBgOffColor3
 	end
-	
+
 	UI.ContextLabel.TextColor3 = mainTextColor3
 	UI.ContextNob.ImageColor3 = radialNobColor3
 	if states.context then
@@ -91,44 +95,96 @@ local function init()
 
 	-- What's a memory leak?
 	UI.SerializeButton.InputBegan:Connect(function(input)
-		if not serializeMouseDown and input.UserInputType == Enum.UserInputType.MouseMovement then
-			UI.SerializeButton.ImageColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton, Enum.StudioStyleGuideModifier.Hover)
-			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText, Enum.StudioStyleGuideModifier.Hover)
+		if
+			not serializeMouseDown
+			and input.UserInputType == Enum.UserInputType.MouseMovement
+		then
+			UI.SerializeButton.ImageColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainButton,
+				Enum.StudioStyleGuideModifier.Hover
+			)
+			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainText,
+				Enum.StudioStyleGuideModifier.Hover
+			)
 		elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
 			serializeMouseDown = true
-			UI.SerializeButton.ImageColor3 =  Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton, Enum.StudioStyleGuideModifier.Pressed)
-			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText, Enum.StudioStyleGuideModifier.Pressed)
+			UI.SerializeButton.ImageColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainButton,
+				Enum.StudioStyleGuideModifier.Pressed
+			)
+			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainText,
+				Enum.StudioStyleGuideModifier.Pressed
+			)
 		end
 	end)
 	UI.SerializeButton.InputEnded:Connect(function(input)
-		if not serializeMouseDown and input.UserInputType == Enum.UserInputType.MouseMovement then
-			UI.SerializeButton.ImageColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton)
-			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText)
+		if
+			not serializeMouseDown
+			and input.UserInputType == Enum.UserInputType.MouseMovement
+		then
+			UI.SerializeButton.ImageColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainButton
+			)
+			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainText
+			)
 		elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
 			serializeMouseDown = false
-			UI.SerializeButton.ImageColor3 =  Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton)
-			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText)
+			UI.SerializeButton.ImageColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainButton
+			)
+			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainText
+			)
 		end
 	end)
 
 	UI.RetryButton.InputBegan:Connect(function(input)
-		if not retryMouseDown and input.UserInputType == Enum.UserInputType.MouseMovement then
-			UI.RetryButton.ImageColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton, Enum.StudioStyleGuideModifier.Hover)
-			UI.RetryText.TextColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText, Enum.StudioStyleGuideModifier.Hover)
+		if
+			not retryMouseDown
+			and input.UserInputType == Enum.UserInputType.MouseMovement
+		then
+			UI.RetryButton.ImageColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainButton,
+				Enum.StudioStyleGuideModifier.Hover
+			)
+			UI.RetryText.TextColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainText,
+				Enum.StudioStyleGuideModifier.Hover
+			)
 		elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
 			retryMouseDown = true
-			UI.RetryButton.ImageColor3 =  Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton, Enum.StudioStyleGuideModifier.Pressed)
-			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText, Enum.StudioStyleGuideModifier.Pressed)
+			UI.RetryButton.ImageColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainButton,
+				Enum.StudioStyleGuideModifier.Pressed
+			)
+			UI.SerializeText.TextColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainText,
+				Enum.StudioStyleGuideModifier.Pressed
+			)
 		end
 	end)
 	UI.RetryButton.InputEnded:Connect(function(input)
-		if not retryMouseDown and input.UserInputType == Enum.UserInputType.MouseMovement then
-			UI.RetryButton.ImageColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton)
-			UI.RetryText.TextColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText)
+		if
+			not retryMouseDown
+			and input.UserInputType == Enum.UserInputType.MouseMovement
+		then
+			UI.RetryButton.ImageColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainButton
+			)
+			UI.RetryText.TextColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainText
+			)
 		elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
 			retryMouseDown = false
-			UI.RetryButton.ImageColor3 =  Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton)
-			UI.RetryText.TextColor3 = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText)
+			UI.RetryButton.ImageColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainButton
+			)
+			UI.RetryText.TextColor3 = Studio.Theme:GetColor(
+				Enum.StudioStyleGuideColor.MainText
+			)
 		end
 	end)
 
