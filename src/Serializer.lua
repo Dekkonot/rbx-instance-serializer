@@ -173,6 +173,9 @@ local function serializeObject(nameList, obj)
 				if defaultState[name] ~= value then
 					if typeof(value) == "Instance" then
 						refs[#refs + 1] = { name, value }
+					elseif typeof(value) == "userdata" then
+						pluginWarn("cannot serialize userdata")
+						return false
 					else
 						local stat = string.format(
 							propertyString,
@@ -205,7 +208,6 @@ local function serialize(obj)
 		pluginWarn("cannot serialize object due to context restrictions")
 		return false
 	end
-
 	local propertyString = make_verbose and PROPERTY_STRING_VERBOSE
 		or PROPERTY_STRING
 
