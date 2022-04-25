@@ -173,15 +173,21 @@ local function serializeObject(nameList, obj)
 				if defaultState[name] ~= value then
 					if typeof(value) == "Instance" then
 						refs[#refs + 1] = { name, value }
-					elseif typeof(value) == "userdata" then
-						pluginWarn("cannot serialize userdata")
-						return false
 					else
+						local couldStringify, stringified = pcall(toStringFunc, value)
+						if not couldStringify then
+							pluginWarn(
+								"cannot serialize property '%s' of %s",
+								name,
+								obj:GetFullName()
+							)
+							continue
+						end
 						local stat = string.format(
 							propertyString,
 							objName,
 							name,
-							toStringFunc(value)
+							stringified
 						)
 						statements[c] = stat
 						len = len + #stat
